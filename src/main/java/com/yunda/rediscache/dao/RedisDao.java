@@ -9,8 +9,8 @@ import java.util.Set;
  * 应用程序一致通过此接口调用缓存
  * 此接口对应的缓存实现类为单例类
  */
-public interface IRedisCache {
-	/** --------------------->>pojo操作<<--------------------- */
+public interface RedisDao {
+	/** --------------------->>pojo+string操作<<--------------------- */
 	boolean set(String key, Object obj); //添加和更新为同一接口,redis中含key为更新，不含为添加
 	Object get(String key);
 	
@@ -30,13 +30,19 @@ public interface IRedisCache {
 	boolean deleteElement(String key, Object value);
 	boolean isMemBer(String key, Object value);
 	
-	/** --------------------->>map操作 <<--------------------- */
+	/** --------------------->>hashMap操作 <<--------------------- */
 	boolean putAll(String key, Map<Object, Object> map);
 	Map<Object, Object> getMap(String key);
+	
+	/** --------------------->>zset操作(暂未实现)<<--------------------- */
 	
 	/** --------------------->>通用操作 <<--------------------- */
 	//删除
 	boolean delete(String key);
+	//主键是否存在
+	boolean hasKey(String key);
 	//清空缓存
 	boolean clear();
+	//生成key
+    String generateKey(Object key);
 }

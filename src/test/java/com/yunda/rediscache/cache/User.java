@@ -1,21 +1,28 @@
-package com.yunda.rediscache;
+package com.yunda.rediscache.cache;
 
 import java.io.Serializable;
 
 public class User implements Serializable{
 	private static final long serialVersionUID = 4682848895237227837L;
-	private String name,sex,address;
+	private String id,name,sex,address;
 	private int age;
 	 
 	public User(){
 	}
-	public User(String name, String sex, int age, String address){
+	public User(String id, String name, String sex, int age, String address){
+		this.id = id;
 		this.name = name;
 		this.sex = sex;
 		this.age = age;
 		this.address = address;
 	}
 	
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
 	public String getName() {
 		return name;
 	}

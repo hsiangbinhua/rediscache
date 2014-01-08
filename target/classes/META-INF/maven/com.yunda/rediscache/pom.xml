@@ -15,7 +15,9 @@
     <jedis.version>2.1.0</jedis.version>
     <org.springframework.data.version>1.0.6.RELEASE</org.springframework.data.version>
     <fastjson.version>1.1.24</fastjson.version> 
+    <slf4j.version>1.7.2</slf4j.version>
     <junit.version>4.11</junit.version> 
+    <log4j.version>1.2.9</log4j.version>
     <org.springframework.version>3.2.1.RELEASE</org.springframework.version>
   </properties>
 
@@ -40,6 +42,24 @@
         <version>${fastjson.version}</version>
     </dependency>
     
+	<!-- log依赖 -->
+    <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
+         <version>${slf4j.version}</version>
+     </dependency>
+     <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>jcl-over-slf4j</artifactId>
+         <version>${slf4j.version}</version>
+         <scope>runtime</scope>
+     </dependency>
+     <dependency>
+    	<groupId>org.slf4j</groupId>
+    	<artifactId>slf4j-log4j12</artifactId>
+    	<version>${slf4j.version}</version>
+    </dependency>
+    
     <!-- 测试依赖 -->
     <dependency>
       <groupId>junit</groupId>
@@ -50,6 +70,36 @@
     <dependency>
     	<groupId>org.springframework</groupId>
     	<artifactId>spring-test</artifactId>
+    	<version>${org.springframework.version}</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.springframework</groupId>
+    	<artifactId>spring-aop</artifactId>
+    	<version>${org.springframework.version}</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.springframework</groupId>
+    	<artifactId>spring-aspects</artifactId>
+    	<version>${org.springframework.version}</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.springframework</groupId>
+    	<artifactId>spring-expression</artifactId>
+    	<version>${org.springframework.version}</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.springframework</groupId>
+    	<artifactId>spring-core</artifactId>
+    	<version>${org.springframework.version}</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.springframework</groupId>
+    	<artifactId>spring-context</artifactId>
+    	<version>${org.springframework.version}</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.springframework</groupId>
+    	<artifactId>spring-tx</artifactId>
     	<version>${org.springframework.version}</version>
     </dependency>
   </dependencies>
