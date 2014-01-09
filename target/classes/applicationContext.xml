@@ -3,24 +3,18 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:cache="http://www.springframework.org/schema/cache"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:c='http://www.springframework.org/schema/c'
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-	<context:component-scan base-package="com.yunda.rediscache"/>
-	<cache:annotation-driven cache-manager="cacheManager"/>
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop  http://www.springframework.org/schema/aop/spring-aop.xsd">
+ 	<cache:annotation-driven />
+ 	<context:property-placeholder location="classpath:/redis.properties"/>
 	
- 	<bean id="config" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="locations">
-			<list>
-				<value>redis.properties</value>
-			</list>
-		</property>
-	</bean>
-	
-<!-- ========================================================= -->
-<!-- redis缓存 -->
-<!-- ========================================================= -->
+	<!-- ========================================================= -->
+	<!-- redis缓存 -->
+	<!-- ========================================================= -->
 	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">    
 	    <property name="maxActive"     value="${redis.pool.maxActive}" />    
 	    <property name="maxIdle"       value="${redis.pool.maxIdle}" />    
@@ -38,21 +32,13 @@
     <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
     	<property name="connectionFactory" ref="jedisConnectionFactory" /> 
     </bean>
-    
+
 	<!-- declare Redis Cache Manager -->  
     <bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager"  
-        c:template-ref="redisTemplate">
-    </bean>
+        c:template-ref="redisTemplate" />
     
     <!-- cache:用于测试 -->
-    <bean id="redisCache" class="com.yunda.rediscache.cache.RedisCacheImpl">
-    	<!--  
-    	<property name="serializer">
-            <bean class="com.yunda.rediscache.common.serializer.JsonSerializer" />
-        </property>
-        <property name="valueSerializer">
-            <bean class="org.springframework.data.redis.serializer.JsonSerializer" />
-        </property> 
-    	<constructor-arg index="0"  value="${appName}" /> -->
+    <bean id="redisDao" class="com.yunda.rediscache.dao.RedisDaoImpl">
+    	<property name="appName"   value="${appName}" />  
     </bean>
 </beans>

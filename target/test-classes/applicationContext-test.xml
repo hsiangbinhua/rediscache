@@ -3,13 +3,11 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:cache="http://www.springframework.org/schema/cache"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:c='http://www.springframework.org/schema/c'
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-	<cache:annotation-driven />
+ 	<cache:annotation-driven />
  	<context:property-placeholder location="classpath:/redis.properties"/>
- 	<context:component-scan base-package="com.yunda.rediscache" />
 	
 	<!-- ========================================================= -->
 	<!-- redis缓存 -->
@@ -31,13 +29,13 @@
     <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
     	<property name="connectionFactory" ref="jedisConnectionFactory" /> 
     </bean>
-
-	<!-- declare Redis Cache Manager -->  
-    <bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager"  
-        c:template-ref="redisTemplate" />
-    
-    <!-- cache:用于测试 -->
-    <bean id="redisDao" class="com.yunda.rediscache.dao.RedisDaoImpl">
-    	<property name="appName"   value="${appName}" />  
+	<!-- redisDao -->
+    <bean id="redisDao" class="com.yunda.rediscache.dao.RedisDaoImpl" />
+    <bean id="redisCache" class="com.yunda.rediscache.cache.RedisCache">
+    	<property name="appName" value="${appName}" /> 
     </bean>
+	<!-- declare Redis Cache Manager -->  
+    <bean id="cacheManager" class="com.yunda.rediscache.cache.RedisCacheManager" />
+    
+    <bean id="userDao" class="com.yunda.rediscache.dao.UserDao" />
 </beans>

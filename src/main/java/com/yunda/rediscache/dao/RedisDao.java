@@ -43,6 +43,4 @@ public interface RedisDao {
 	boolean hasKey(String key);
 	//清空缓存
 	boolean clear();
-	//生成key
-    String generateKey(Object key);
 }

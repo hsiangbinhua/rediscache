@@ -17,6 +17,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.ValueOperations;
 
+import com.yunda.rediscache.utils.keyGenerator.CacheKeyGenerator;
+
 public class RedisDaoImpl implements RedisDao{
 	@Autowired
 	private RedisTemplate<String, Object> redisTemplate;
@@ -29,29 +31,24 @@ public class RedisDaoImpl implements RedisDao{
 	@Resource(name="redisTemplate")
 	private HashOperations<String, Object, Object> hashOps;
 	
-	private String appName;
-	public void setAppName(String appName) {
-		this.appName = appName;
-	} 
-	
 	/** -------------------->> pojo + string 操作 <<-------------------- */
 	@Override
 	public boolean set(String key, Object value) {
 		if(key == null || value == null)
 			return false;
-		valueOps.set(generateKey(key), value);
+		valueOps.set(CacheKeyGenerator.generateSimpleKey(key), value);
 		return true;
 	}
 	
 	@Override
 	public Object get(String key) {
-		return valueOps.get(generateKey(key));
+		return valueOps.get(CacheKeyGenerator.generateSimpleKey(key));
 	}
 	
 	/** --------------->> list操作 <<--------------- */
 	@Override
 	public boolean setList(String key, List<Object> list) {
-		String uniqueKey = generateKey(key);
+		String uniqueKey = CacheKeyGenerator.generateSimpleKey(key);
 		for (Object value: list)
 			listOps.rightPush(uniqueKey, value);
 		return true;
@@ -67,7 +64,7 @@ public class RedisDaoImpl implements RedisDao{
 	 */
 	@Override
 	public Long getListSize(String key) {  
-        return listOps.size(generateKey(key));  
+        return listOps.size(CacheKeyGenerator.generateSimpleKey(key));  
     }  
 	/**
 	 * 按范围索引
@@ -78,7 +75,7 @@ public class RedisDaoImpl implements RedisDao{
 	 */
 	@Override
 	public List<Object> getListByRange(String key, int start, int end){
-		String uniqueKey = generateKey(key);
+		String uniqueKey = CacheKeyGenerator.generateSimpleKey(key);
 		List<Object> list = listOps.range(uniqueKey, start, end);
 		return list;
 	}
@@ -91,7 +88,7 @@ public class RedisDaoImpl implements RedisDao{
 	 */
 	@Override
 	public boolean setByIndex(String key, long index, Object value){
-		listOps.set(generateKey(key), index, value);	
+		listOps.set(CacheKeyGenerator.generateSimpleKey(key), index, value);	
 		return true;
 	}
 	/**
@@ -100,7 +97,7 @@ public class RedisDaoImpl implements RedisDao{
 	 */
 	@Override
 	public Object getByIndex(String key, long index){
-		return listOps.index(generateKey(key), index);
+		return listOps.index(CacheKeyGenerator.generateSimpleKey(key), index);
 	}
 	
 	/**
@@ -108,7 +105,7 @@ public class RedisDaoImpl implements RedisDao{
 	 */
 	@Override
 	public boolean deleteByIndex(String key, long index, Object value){
-		listOps.remove(generateKey(key), index, value);
+		listOps.remove(CacheKeyGenerator.generateSimpleKey(key), index, value);
 		return true;
 	}
 	
@@ -118,7 +115,7 @@ public class RedisDaoImpl implements RedisDao{
 	 */
 	@Override
 	public boolean addSet(String key, Set<Object> set){
-		String uniqueKey = generateKey(key);
+		String uniqueKey = CacheKeyGenerator.generateSimpleKey(key);
 		for(Object value: set)
 			setOps.add(uniqueKey, value);
 		return true;
@@ -128,7 +125,7 @@ public class RedisDaoImpl implements RedisDao{
 	 */
 	@Override
 	public Set<Object> getSet(String key){
-		Set<Object> ret = setOps.members(generateKey(key));
+		Set<Object> ret = setOps.members(CacheKeyGenerator.generateSimpleKey(key));
 		return ret.isEmpty()?null:ret;
 	}
 	/**
@@ -136,30 +133,30 @@ public class RedisDaoImpl implements RedisDao{
 	 */
 	@Override
 	public Long getSetSize(String key){
-		return setOps.size(generateKey(key));
+		return setOps.size(CacheKeyGenerator.generateSimpleKey(key));
 	}
 	/**
 	 * 删除指定key中的set集合的某个元素
 	 */
 	@Override
 	public boolean deleteElement(String key, Object value){
-		return setOps.remove(generateKey(key), value);
+		return setOps.remove(CacheKeyGenerator.generateSimpleKey(key), value);
 	}
 	/**
 	 * 判断指定key中的set集合是否包含某元素
 	 */
 	@Override
 	public boolean isMemBer(String key, Object value){
-		return setOps.isMember(generateKey(key), value);
+		return setOps.isMember(CacheKeyGenerator.generateSimpleKey(key), value);
 	}
 	
 	/** --------------------->> map操作 <<--------------------- */
 	public boolean putAll(String key, Map<Object, Object> map){
-		hashOps.putAll(generateKey(key), map);
+		hashOps.putAll(CacheKeyGenerator.generateSimpleKey(key), map);
 		return true;
 	}
 	public Map<Object, Object> getMap(String key){
-		Map<Object, Object> ret = hashOps.entries(generateKey(key));
+		Map<Object, Object> ret = hashOps.entries(CacheKeyGenerator.generateSimpleKey(key));
 		return ret.isEmpty()?null:ret;
 	}
 	
@@ -168,7 +165,7 @@ public class RedisDaoImpl implements RedisDao{
 	/** --------------------->> 通用操作 <<--------------------- */
 	@Override
 	public boolean hasKey(String key){
-		return !redisTemplate.type(generateKey(key)).equals(DataType.NONE);
+		return !redisTemplate.type(CacheKeyGenerator.generateSimpleKey(key)).equals(DataType.NONE);
 	}
 	/**
 	 * 清空缓存
@@ -188,16 +185,11 @@ public class RedisDaoImpl implements RedisDao{
 	@Override
 	public boolean delete(String key) {
 		try {
-			valueOps.getOperations().delete(generateKey(key));
+			valueOps.getOperations().delete(CacheKeyGenerator.generateSimpleKey(key));
 		}catch(Exception e){
 			e.getStackTrace();
 			return false;
 		}
 		return true;
 	}
-	@Override	
-    public String generateKey(Object key) {
-        return new StringBuilder().append(appName).append("#").append(String.valueOf(key)).toString();
-    }
-
 }

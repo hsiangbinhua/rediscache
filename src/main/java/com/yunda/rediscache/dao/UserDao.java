@@ -1,5 +1,6 @@
-package com.yunda.rediscache.cache;
+package com.yunda.rediscache.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,6 +10,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 
+import com.yunda.rediscache.cache.User;
+
+
+
+/**
+ * @author zhengfc
+ * 测试@cache用
+ */
 public class UserDao {
 	private static final Logger logger = LoggerFactory.getLogger(UserDao.class);
 	private Map<String, User> mockDB = new ConcurrentHashMap<String, User>();
@@ -33,7 +42,7 @@ public class UserDao {
 		mockDB.remove(id);
 		return true;
 	}
-	@Cacheable(value = "user", key = "id")
+	@Cacheable("user")
 	public User getById(String id){
 		logger.info("excute getById:id="+id);
 		if(!mockDB.containsKey(id))
@@ -43,7 +52,9 @@ public class UserDao {
 	@Cacheable("users")
 	public List<User> getAll(){
 		logger.info("excute getAll");
-		return (List<User>)mockDB.values();
+		List<User> ret = new ArrayList<User>();
+		ret.addAll(mockDB.values());
+		return ret;
 	}
 	
 }
