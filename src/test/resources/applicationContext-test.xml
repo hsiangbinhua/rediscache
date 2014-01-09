@@ -6,12 +6,13 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
- 	<cache:annotation-driven />
  	<context:property-placeholder location="classpath:/redis.properties"/>
 	
 	<!-- ========================================================= -->
 	<!-- redis缓存 -->
 	<!-- ========================================================= -->
+	<cache:annotation-driven key-generator="keyGenerator"/>
+	<bean id="keyGenerator" class="com.yunda.rediscache.utils.keyGenerator.CacheKeyGenerator" /> 
 	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">    
 	    <property name="maxActive"     value="${redis.pool.maxActive}" />    
 	    <property name="maxIdle"       value="${redis.pool.maxIdle}" />    
@@ -36,6 +37,6 @@
     </bean>
 	<!-- declare Redis Cache Manager -->  
     <bean id="cacheManager" class="com.yunda.rediscache.cache.RedisCacheManager" />
-    
+
     <bean id="userDao" class="com.yunda.rediscache.dao.UserDao" />
 </beans>

@@ -15,7 +15,6 @@ import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import com.yunda.rediscache.dao.RedisDao;
-import com.yunda.rediscache.utils.keyGenerator.CacheKeyGenerator;
 
 
 public class RedisCache implements Cache{
@@ -34,7 +33,7 @@ public class RedisCache implements Cache{
 	@Override
 	public void evict(Object key) {
 		if(key == null) return;
-		DataType cacheType= redisTemplate.type(CacheKeyGenerator.generateSimpleKey(key));
+		DataType cacheType= redisTemplate.type(key.toString());
 		if(!cacheType.equals(DataType.NONE))
 			redisDao.delete(key.toString());
 	}
@@ -42,7 +41,7 @@ public class RedisCache implements Cache{
 	@Override
 	public ValueWrapper get(Object key) {
 		if(key == null) return null;
-		String keyTemp = CacheKeyGenerator.generateSimpleKey(key);
+		String keyTemp = key.toString();
 		DataType cacheType= redisTemplate.type(keyTemp);
 		logger.info("key:"+key+", type:"+cacheType);
 		if(cacheType.equals(DataType.LIST))
