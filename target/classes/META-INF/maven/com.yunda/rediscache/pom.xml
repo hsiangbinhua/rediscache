@@ -12,13 +12,13 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jedis.version>2.1.0</jedis.version>
-    <org.springframework.data.version>1.0.6.RELEASE</org.springframework.data.version>
+    <jedis.version>2.2.0</jedis.version>
+    <org.springframework.data.version>1.1.0.RELEASE</org.springframework.data.version>
     <fastjson.version>1.1.24</fastjson.version> 
     <slf4j.version>1.7.2</slf4j.version>
     <junit.version>4.11</junit.version> 
     <log4j.version>1.2.9</log4j.version>
-    <org.springframework.version>3.2.1.RELEASE</org.springframework.version>
+    <org.springframework.version>3.2.3.RELEASE</org.springframework.version>
   </properties>
 
   <dependencies>
@@ -32,7 +32,7 @@
     <dependency>
         <groupId>org.springframework.data</groupId>
         <artifactId>spring-data-redis</artifactId>
-        <version>${org.springframework.data.version}</version>
+        <version>1.1.0.RELEASE</version>
     </dependency>
     
     <!-- json序列化依赖 --> 

@@ -3,6 +3,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:cache="http://www.springframework.org/schema/cache"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:c="http://www.springframework.org/schema/c"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
@@ -12,7 +13,7 @@
 	<!-- redis缓存 -->
 	<!-- ========================================================= -->
 	<cache:annotation-driven key-generator="keyGenerator"/>
-	<bean id="keyGenerator" class="com.yunda.rediscache.utils.keyGenerator.CacheKeyGenerator" /> 
+	<bean id="keyGenerator" class="com.yunda.rediscache.utils.keyGenerator.DefaultKeyGenerator" /> 
 	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">    
 	    <property name="maxActive"     value="${redis.pool.maxActive}" />    
 	    <property name="maxIdle"       value="${redis.pool.maxIdle}" />    
@@ -30,13 +31,10 @@
     <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
     	<property name="connectionFactory" ref="jedisConnectionFactory" /> 
     </bean>
-	<!-- redisDao -->
+    <bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager" c:template-ref="redisTemplate"/>
+	<!-- redisDao 如果不通过注解缓存数据, 可通过此类操作redis-->
     <bean id="redisDao" class="com.yunda.rediscache.dao.RedisDaoImpl" />
-    <bean id="redisCache" class="com.yunda.rediscache.cache.RedisCache">
-    	<property name="appName" value="${appName}" /> 
-    </bean>
+    <!--<bean id="redisCache" class="com.yunda.rediscache.cache.RedisCache" /> 暂时用spring自带的-->
 	<!-- declare Redis Cache Manager -->  
-    <bean id="cacheManager" class="com.yunda.rediscache.cache.RedisCacheManager" />
-
     <bean id="userDao" class="com.yunda.rediscache.dao.UserDao" />
 </beans>

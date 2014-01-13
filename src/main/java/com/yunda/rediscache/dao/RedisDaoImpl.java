@@ -46,9 +46,8 @@ public class RedisDaoImpl implements RedisDao{
 	/** --------------->> list操作 <<--------------- */
 	@Override
 	public boolean setList(String key, List<Object> list) {
-		String uniqueKey = key;
 		for (Object value: list)
-			listOps.rightPush(uniqueKey, value);
+			listOps.rightPush(key, value);
 		return true;
 	}
 	@Override
@@ -73,8 +72,7 @@ public class RedisDaoImpl implements RedisDao{
 	 */
 	@Override
 	public List<Object> getListByRange(String key, int start, int end){
-		String uniqueKey = key;
-		List<Object> list = listOps.range(uniqueKey, start, end);
+		List<Object> list = listOps.range(key, start, end);
 		return list;
 	}
 	/**
@@ -113,9 +111,8 @@ public class RedisDaoImpl implements RedisDao{
 	 */
 	@Override
 	public boolean addSet(String key, Set<Object> set){
-		String uniqueKey = key;
 		for(Object value: set)
-			setOps.add(uniqueKey, value);
+			setOps.add(key, value);
 		return true;
 	}
 	/**
@@ -138,7 +135,7 @@ public class RedisDaoImpl implements RedisDao{
 	 */
 	@Override
 	public boolean deleteElement(String key, Object value){
-		return setOps.remove(key, value);
+		return setOps.remove(key, value)>0;
 	}
 	/**
 	 * 判断指定key中的set集合是否包含某元素

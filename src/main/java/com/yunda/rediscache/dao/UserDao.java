@@ -21,12 +21,15 @@ import com.yunda.rediscache.cache.User;
 public class UserDao {
 	private static final Logger logger = LoggerFactory.getLogger(UserDao.class);
 	private Map<String, User> mockDB = new ConcurrentHashMap<String, User>();
+	
+	@CacheEvict(value="user", allEntries=true)
 	public boolean save(User user){
 		logger.info("excute save user:id="+user.getId());
 		mockDB.put(user.getId(), user);
 		return true;
 	}
-	@CacheEvict(value = "user", key = "id")
+
+	@CacheEvict(value = "user", allEntries = true)
 	public boolean update(User user){
 		logger.info("excute update user:id="+user.getId());
 		if(!mockDB.containsKey(user.getId()))
@@ -34,7 +37,7 @@ public class UserDao {
 		mockDB.put(user.getId(), user);
 		return true;
 	}
-	@CacheEvict(value = "user", key = "id")
+	@CacheEvict(value = "user", allEntries = true)
 	public boolean delete(String id){
 		logger.info("excute delete user:id="+id);
 		if(!mockDB.containsKey(id))
@@ -42,14 +45,14 @@ public class UserDao {
 		mockDB.remove(id);
 		return true;
 	}
-	@Cacheable("user")
+	@Cacheable(value="user")
 	public User getById(String id){
 		logger.info("excute getById:id="+id);
 		if(!mockDB.containsKey(id))
 			return null;
 		return mockDB.get(id);
 	}
-	@Cacheable("users")
+	@Cacheable("user")
 	public List<User> getAll(){
 		logger.info("excute getAll");
 		List<User> ret = new ArrayList<User>();

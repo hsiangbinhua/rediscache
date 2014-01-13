@@ -21,11 +21,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.yunda.rediscache.dao.RedisDao;
 
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/applicationContext-test.xml")
 public class RedisDaoTest{
 	@Autowired
-	public RedisDao redisCache;
+	public RedisDao redisDao;
 	
 	private User user1;
 	private User user2;
@@ -52,31 +53,31 @@ public class RedisDaoTest{
 	@Test
 	public void testSet(){
 		set();
-		redisCache.set(test, user1);
-		assertTrue(assertUserEquals(user1,(User)(redisCache.get(test))));
+		redisDao.set(test, user1);
+		assertEquals(user1,(User)(redisDao.get(test)));
 	}
 	
 	@Test
 	public void testGet(){
 		set();
-		assertTrue(assertUserEquals(user1,(User)(redisCache.get("zhengfc"))));
-		assertTrue(assertUserEquals(user2,(User)(redisCache.get("youzx"))));
-		assertTrue(redisCache.get(test).equals(test));
+		assertEquals(user1,(User)(redisDao.get("zhengfc")));
+		assertEquals(user2,(User)(redisDao.get("youzx")));
+		assertTrue(redisDao.get(test).equals(test));
 	}
 	@Test
 	public void testDeletePojo(){
 		set();
-		redisCache.delete("zhengfc");
-		assertNull(redisCache.get("zhengfc"));
-		assertTrue(assertUserEquals(user2,(User)(redisCache.get("youzx"))));
+		redisDao.delete("zhengfc");
+		assertNull(redisDao.get("zhengfc"));
+		assertEquals(user2,(User)(redisDao.get("youzx")));
 	}
 	@Test
 	public void testclear(){
 		set();
-		redisCache.clear();
-		assertNull(redisCache.get("zhengfc"));
-		assertNull(redisCache.get(test));
-		assertNull(redisCache.get("youzx"));
+		redisDao.clear();
+		assertNull(redisDao.get("zhengfc"));
+		assertNull(redisDao.get(test));
+		assertNull(redisDao.get("youzx"));
 	}
 	
 	/** ---------------------->>list测试<<---------------------- */
@@ -86,156 +87,149 @@ public class RedisDaoTest{
 	}
 	@Test
 	public void testSize(){
-		redisCache.clear();
+		redisDao.clear();
 		setList();
-		assertEquals(3, redisCache.getListSize("list").intValue());
+		assertEquals(3, redisDao.getListSize("list").intValue());
 	}
 	@Test 
 	public void testGetList(){
-		redisCache.clear();
+		redisDao.clear();
 		setList();
-		List<Object> actual = redisCache.getList("list");
+		List<Object> actual = redisDao.getList("list");
 		assertEquals(test,actual.get(0));
-		assertTrue(assertUserEquals(user1,(User)actual.get(1)));
-		assertTrue(assertUserEquals(user2,(User)actual.get(2)));
+		assertEquals(user1,(User)actual.get(1));
+		assertEquals(user2,(User)actual.get(2));
 	}
 	@Test 
 	public void testDeleteList(){
-		redisCache.clear();
+		redisDao.clear();
 		setList();
-		redisCache.delete("list");
-		assertNull(redisCache.get("list"));
+		redisDao.delete("list");
+		assertNull(redisDao.get("list"));
 	}
 	@Test
 	public void testGetListByRange(){
-		redisCache.clear();
+		redisDao.clear();
 		setList();
-		List<Object> actual = redisCache.getListByRange("list", 1, 3);
-		assertTrue(assertUserEquals(user1,(User)actual.get(0)));
-		assertTrue(assertUserEquals(user2,(User)actual.get(1)));
+		List<Object> actual = redisDao.getListByRange("list", 1, 3);
+		assertEquals(user1,(User)actual.get(0));
+		assertEquals(user2,(User)actual.get(1));
 	}
 	@Test
 	public void testSetGetByIndex(){
-		redisCache.clear();
+		redisDao.clear();
 		setList();
-		redisCache.setByIndex("list", 1, test);
-		assertEquals(test, redisCache.getByIndex("list", 1));
+		redisDao.setByIndex("list", 1, test);
+		assertEquals(test, redisDao.getByIndex("list", 1));
 	}
 	@Test
 	public void testDeleteByIndex(){
-		redisCache.clear();
+		redisDao.clear();
 		setList();
-		redisCache.deleteByIndex("list", 1, user1);
-		assertEquals(redisCache.getListSize("list").intValue(), 2);
-		assertEquals(redisCache.getByIndex("list", 0), test);
-		assertTrue(assertUserEquals((User)(redisCache.getByIndex("list", 1)), user2));
+		redisDao.deleteByIndex("list", 1, user1);
+		assertEquals(redisDao.getListSize("list").intValue(), 2);
+		assertEquals(redisDao.getByIndex("list", 0), test);
+		assertEquals((User)(redisDao.getByIndex("list", 1)), user2);
 	}
 	@Test
 	public void testSetSize(){
-		redisCache.clear();
+		redisDao.clear();
 		addSet();
-		int actual = redisCache.getSetSize("set").intValue();
+		int actual = redisDao.getSetSize("set").intValue();
 		assertEquals(3,actual);
 	}
 	@Test
 	public void testGetSet(){
-		redisCache.clear();
+		redisDao.clear();
 		addSet();
-		Set<Object> actual = redisCache.getSet("set");
+		Set<Object> actual = redisDao.getSet("set");
 		for(Object value: actual)
 			if(value.getClass().isInstance(user1))
-				assertTrue(assertUserEquals(user1,(User)value) || assertUserEquals(user2,(User)value));
+				assertTrue(user1.equals((User)value)|| user2.equals((User)value));
 		assertTrue(actual.contains(test));
 	}
 	@Test
 	public void testDeleteElement(){
-		redisCache.clear();
+		redisDao.clear();
 		addSet();
-		redisCache.deleteElement("set", user1);
-		Set<Object> actual = redisCache.getSet("set");
+		redisDao.deleteElement("set", user1);
+		Set<Object> actual = redisDao.getSet("set");
 		for(Object value: actual){
 			if(value.getClass().isInstance(user1))
-				assertTrue(assertUserEquals(user2,(User)value));
+				assertEquals(user2,(User)value);
 		}
 		assertTrue(actual.contains(test));
 		assertTrue(actual.size()==2);
 	}
 	@Test
 	public void testIsMember(){
-		redisCache.clear();
+		redisDao.clear();
 		addSet();
-		assertTrue(redisCache.isMemBer("set", user1));
-		assertTrue(redisCache.isMemBer("set", user2));
-		assertTrue(redisCache.isMemBer("set", test));
+		assertTrue(redisDao.isMemBer("set", user1));
+		assertTrue(redisDao.isMemBer("set", user2));
+		assertTrue(redisDao.isMemBer("set", test));
 	}
 	@Test
 	public void testDeleteSet(){
-		redisCache.clear();
+		redisDao.clear();
 		addSet();
-		redisCache.delete("set");
-		assertNull(redisCache.getSet("set"));
+		redisDao.delete("set");
+		assertNull(redisDao.getSet("set"));
 	}
 	@Test
 	public void testMap(){
-		redisCache.clear();
+		redisDao.clear();
 		put();
-		Map<Object, Object> map = redisCache.getMap("map");
+		Map<Object, Object> map = redisDao.getMap("map");
 		assertTrue(map.get(test).equals(test));
-		assertTrue(assertUserEquals(user1, (User)map.get("user1")));
-		assertTrue(assertUserEquals(user2, (User)map.get("user2")));;
+		assertEquals(user1, (User)map.get("user1"));
+		assertEquals(user2, (User)map.get("user2"));;
 	}
 	@Test
 	public void testHasKey(){
-		redisCache.clear();
+		redisDao.clear();
 		put();
-		assertTrue(redisCache.hasKey("map"));
+		assertTrue(redisDao.hasKey("map"));
 	}
 	@Test
 	public void testDeleteMap(){
-		redisCache.clear();
+		redisDao.clear();
 		put();
-		redisCache.delete("map");
-		assertNull(redisCache.getMap("map"));
+		redisDao.delete("map");
+		assertNull(redisDao.getMap("map"));
 	}
 //	@Test
 //	public void testPerformace(){
-//		redisCache.clear();
+//		redisDao.clear();
 //		User userp = new User("zhengfc","male",10,"shanghai");
 //		List<Object> listp = new ArrayList<Object>();
 //		for(int i=0; i<1000000; i++)
 //			listp.add(userp);
 //		long start = System.currentTimeMillis();
-//		redisCache.setList("listp", listp);
+//		redisDao.setList("listp", listp);
 //		long middle = System.currentTimeMillis();
-//		redisCache.getList("listp");
+//		redisDao.getList("listp");
 //		long end = System.currentTimeMillis();
 //		System.out.println("time-----set------>>"+(middle-start));
 //		System.out.println("time-----get------>>"+(end-middle));
 //	}
 	@After
 	public void tearDown() {
-		redisCache.clear();
+		redisDao.clear();
 	}
 	
 	private void set(){
-		redisCache.set("zhengfc", user1);
-		redisCache.set("youzx", user2);
-		redisCache.set(test, test);
+		redisDao.set("zhengfc", user1);
+		redisDao.set("youzx", user2);
+		redisDao.set(test, test);
 	}
 	private void setList(){
-		redisCache.setList("list", list);
+		redisDao.setList("list", list);
 	}
 	private void addSet(){
-		redisCache.addSet("set", set);
+		redisDao.addSet("set", set);
 	}
 	private void put(){
-		redisCache.putAll("map", map);
-	}
-	private boolean assertUserEquals(User expect, User actual){
-		return  actual.getId().equals(expect.getId())
-				&& actual.getName().equals(expect.getName())
-				&& actual.getSex().equals(expect.getSex())
-				&& (actual.getAge() == expect.getAge())
-				&& actual.getAddress().equals(expect.getAddress());
+		redisDao.putAll("map", map);
 	}
 }
